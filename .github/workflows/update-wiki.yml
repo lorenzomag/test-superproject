@@ -44,7 +44,7 @@ jobs:
     # Step 5: Update the wiki with the new README content
     - name: Update Wiki with Submodule Readmes
       run: |
-        mv main/wiki_update/README.md wiki/Submodule_READMEs.md
+        mv wiki_update/README.md wiki/Submodule_READMEs.md
         cd wiki
         git add Submodule_READMEs.md
         git commit -m "Update submodule README documentation"
