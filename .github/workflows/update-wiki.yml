@@ -1,9 +1,7 @@
 name: Update Wiki with Submodule READMEs
 
 on:
-  schedule:
-    - cron: '0 0 1 * *'  # Runs every Monday at midnight
-  workflow_dispatch:  # Allows manual trigger of the workflow
+  push
 
 jobs:
   update-wiki:
