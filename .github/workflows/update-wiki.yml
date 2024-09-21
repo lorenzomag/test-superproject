@@ -1,0 +1,51 @@
+name: Update Wiki with Submodule READMEs
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # Runs every Monday at midnight
+  workflow_dispatch:  # Allows manual trigger of the workflow
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository with submodules
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive  # Ensures submodules are also checked out
+
+    # Step 2: Pull the latest README files from submodules
+    - name: Extract README files from submodules
+      run: |
+        mkdir -p wiki_update
+        for submodule in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'); do
+          if [ -f "$submodule/README.md" ]; then
+            echo "## Submodule: $submodule" >> wiki_update/README.md
+            echo "\n---" >> wiki_update/README.md
+            cat "$submodule/README.md" >> wiki_update/README.md
+            echo "\n\n" >> wiki_update/README.md
+          fi
+        done
+
+    # Step 3: Configure Git user (required to push changes)
+    - name: Set up Git user
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    # Step 4: Clone the wiki repository
+    - name: Clone the wiki
+      run: |
+        git clone https://github.com/${{ github.repository }}.wiki.git wiki
+
+    # Step 5: Update the wiki with the new README content
+    - name: Update Wiki with Submodule Readmes
+      run: |
+        mv wiki_update/README.md wiki/Submodule_READMEs.md
+        cd wiki
+        git add Submodule_READMEs.md
+        git commit -m "Update submodule README documentation"
+        git push
+
