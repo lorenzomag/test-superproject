@@ -12,8 +12,9 @@ jobs:
     steps:
     # Step 1: Checkout the repository with submodules
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
+        token: ${{ secrets.GH_TOKEN }}
         submodules: recursive  # Ensures submodules are also checked out
 
     # Step 2: Pull the latest README files from submodules
@@ -33,18 +34,22 @@ jobs:
     - name: Set up Git user
       run: |
         git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
     # Step 4: Clone the wiki repository with authentication
     - name: Clone the wiki
-      run: |
-        git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.repository }}.wiki
+        token: ${{ secrets.GH_TOKEN }}
+        submodules: recursive  # Ensures submodules are also checked out
+      
 
     # Step 5: Update the wiki with the new README content
     - name: Update Wiki with Submodule Readmes
       run: |
-        mv wiki_update/README.md wiki/Submodule_READMEs.md
-        cd wiki
+        mv wiki_update/README.md ${{ github.repository }}.wiki/Submodule_READMEs.md
+        cd ${{ github.repository }}.wiki
         git add Submodule_READMEs.md
         git commit -m "Update submodule README documentation"
         git push
