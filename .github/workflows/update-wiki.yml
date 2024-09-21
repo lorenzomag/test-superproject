@@ -23,7 +23,7 @@ jobs:
           if [ -f "$submodule/README.md" ]; then
             printf "\n<details><summary>$submodule </summary>\n\n"
             echo "## Submodule: $submodule" >> wiki_update/README.md
-            printf "\n---" >> wiki_update/README.md
+            printf "\n---\n" >> wiki_update/README.md
             cat "$submodule/README.md" >> wiki_update/README.md
             printf "\n</details>\n" >> wiki_update/README.md
           fi
